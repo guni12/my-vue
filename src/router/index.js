@@ -13,9 +13,9 @@ export default new Router({
         component: Me
     },
     {
-        path: '/report/:kmom',
+        path: '/reports/:kmom',
         name: 'Redovisning',
-        component: Report
+        component: Report,
     }
   ]
 })
