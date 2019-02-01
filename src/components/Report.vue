@@ -29,13 +29,12 @@ export default {
   mounted() {
     let addr = "https://redovisa.guni.me/reports/" + this.$route.params.kmom;
     this.getText(addr);
-    $route(to, from);
   },
   methods: {
     getText(addr) {
       let that = this;
       that.text = "";
-      let test = fetch(addr)
+      fetch(addr)
       .then(function(response) {
           return response.json();
       })
@@ -52,17 +51,15 @@ export default {
             };
           });
       });
-      console.log("text: ", test);
     }
   },
   watch: {
-    $route(to, from) {
-      // console.log(to, from);
+    $route(to) {
       let that = this;
       that.text = "";
       let moved = "https://redovisa.guni.me" + to.path;
       // console.log(moved);
-      let test = fetch(moved).then(function(response) {
+      fetch(moved).then(function(response) {
           return response.json();
       })
       .then(function(result) {
@@ -78,7 +75,6 @@ export default {
             };
           });
       });
-      console.log("text: ", test);
     }
   },
 }
@@ -86,10 +82,20 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
+main {
+    width: 52em;
+    margin: 0 auto;
+    padding: 3em 3em 3em;
+    background-color: #68722c;
+    color: white;
+}
 h2 {
   text-transform: uppercase;
 }
 .question {
   margin-bottom: 2em;
+}
+p {
+    font-size: 1em;
 }
 </style>
