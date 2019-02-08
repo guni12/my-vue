@@ -17,66 +17,74 @@
 <script>
 import Nav from './Nav.vue'
 export default {
-  name: 'Report',
-  components: {
-    Nav,
-  },
-  data() {
-    return {
-      questions: [],
-    }
-  },
-  mounted() {
-    let addr = "https://redovisa.guni.me/reports/" + this.$route.params.kmom;
-    this.getText(addr);
-  },
-  methods: {
-    getText(addr) {
-      let that = this;
-      that.text = "";
-      fetch(addr)
-      .then(function(response) {
-          return response.json();
-      })
-      .then(function(result) {
-          // eslint-disable-next-line
-          //console.log(result);
-          var test = result.data.questions;
-          test = JSON.parse(test);
-          that.questions = test.map((question, index) => {
-            return {
-              key: index,
-              question: question.question,
-              answer: question.answer
-            };
-          });
-      });
-    }
-  },
-  watch: {
-    $route(to) {
-      let that = this;
-      that.text = "";
-      let moved = "https://redovisa.guni.me" + to.path;
-      // console.log(moved);
-      fetch(moved).then(function(response) {
-          return response.json();
-      })
-      .then(function(result) {
-          // eslint-disable-next-line
-          // console.log(result);
-          var test = result.data.questions;
-          test = JSON.parse(test);
-          that.questions = test.map((question, index) => {
-            return {
-              key: index,
-              question: question.question,
-              answer: question.answer
-            };
-          });
-      });
-    }
-  },
+    name: 'Report',
+    components: {
+        Nav,
+    },
+    data() {
+        return {
+            questions: [],
+        }
+    },
+    mounted() {
+        let addr = "https://redovisa.guni.me/reports/" + this.$route.params.kmom;
+        this.getText(addr);
+    },
+    methods: {
+        getText(addr) {
+            let that = this;
+            that.text = "";
+            fetch(addr)
+            .then(function(response) {
+                return response.json();
+            })
+            .then(function(result) {
+                // eslint-disable-next-line
+                //console.log(result);
+                var test = result.data.questions;
+                test = JSON.parse(test);
+                that.questions = test.map((question, index) => {
+                    return {
+                    key: index,
+                    question: question.question,
+                    answer: question.answer
+                    };
+                });
+            })
+            .catch(function(e) {
+                // eslint-disable-next-line
+                console.log("error", e);
+            });
+        }
+    },
+    watch: {
+        $route(to) {
+            let that = this;
+            that.text = "";
+            let moved = "https://redovisa.guni.me" + to.path;
+             //console.log(moved);
+            fetch(moved).then(function(response) {
+                return response.json();
+            })
+            .then(function(result) {
+                // eslint-disable-next-line
+                // console.log(result);
+                var test = result.data.questions;
+                test = JSON.parse(test);
+                that.questions = test.map((question, index) => {
+                    return {
+                    key: index,
+                    question: question.question,
+                    answer: question.answer
+                    };
+                });
+            })
+            .catch(function(e) {
+                // eslint-disable-next-line
+                console.log("error", e);
+            });
+        }
+    },
 }
 </script>
 

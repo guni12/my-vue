@@ -4,22 +4,27 @@
     "private": true,
     "description": "Me-page for Guni's Ramverk2, front-end",
     "scripts": {
-        "serve": "vue-cli-service serve",
-        "build": "vue-cli-service build",
+        "prebuild": "node ./node_modules/rimraf/bin.js ./node_modules/.cache",
+        "build": "vue-cli-service build --modern",
+        "serve": "vue-cli-service serve --host localhost",
         "lint": "vue-cli-service lint",
         "deploy": "npm run build && rsync -av dist/* deploy@guni.me:/var/www/my-vue.guni.me/html/"
     },
     "dependencies": {
+        "axios": "^0.18.0",
         "vue": "^2.5.17",
-        "vue-router": "^3.0.2"
+        "vue-router": "^3.0.2",
+        "vuex": "^3.0.1"
     },
     "devDependencies": {
         "@vue/cli-plugin-babel": "^3.2.0",
         "@vue/cli-plugin-eslint": "^3.2.1",
         "@vue/cli-service": "^3.2.0",
+        "@vue/eslint-config-prettier": "^3.0.0",
         "babel-eslint": "^10.0.1",
         "eslint": "^5.8.0",
         "eslint-plugin-vue": "^5.0.0-0",
+        "rimraf": "^2.6.3",
         "vue-template-compiler": "^2.5.17"
     },
     "eslintConfig": {
