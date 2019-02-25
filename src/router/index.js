@@ -5,6 +5,7 @@ import Report from '@/components/Report'
 import CreateReport from '@/components/CreateReport'
 import UpdateReport from '@/components/UpdateReport'
 import Login from '@/components/Login'
+import WS from '@/components/WS'
 //import store from '@/store/'
 
 Vue.use(Router)
@@ -63,6 +64,11 @@ export default new Router({
         name: 'Login',
         component: Login,
         beforeEnter: ifNotAuthenticated,
+    },
+    {
+        path: '/ws',
+        name: 'WS',
+        component: WS
     }
   ]
 })

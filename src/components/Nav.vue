@@ -6,9 +6,12 @@
         <li v-if='isAuthenticated' @click="logout"><span v-if='isAuthenticated'>Logga ut</span></li>
         <li><router-link to="/reports">Skriv</router-link></li>
         <li><router-link to="/update">Ed</router-link></li>
+        <li><router-link to="/ws">WS</router-link></li>
         <li><router-link to="/reports/kmom01">kmom01</router-link></li>
         <li><router-link to="/reports/kmom02">kmom02</router-link></li>
         <li><router-link to="/reports/kmom03">kmom03</router-link></li>
+        <li><router-link to="/reports/kmom04">kmom04</router-link></li>
+        <li><router-link to="/reports/kmom05">kmom05</router-link></li>
     </ul>
 </nav>
 </template>

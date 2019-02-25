@@ -42,6 +42,7 @@ html {
 }
 .app {
     width: 62em;
+    max-width: 100%;
     margin: 0 auto;
     padding: 2em 6em 8em;
     background-color: #0074d9;
