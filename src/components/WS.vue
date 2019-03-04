@@ -21,6 +21,7 @@
             <!-- submit button -->
             <div class="field">
                 <button type="submit" class="button" @click.self.prevent="getConnect">Connect</button>
+                <button type="submit" id="close" class="button" name="close" @click.self.prevent="getClose">Close</button>
             </div>
         </form>
 
@@ -34,14 +35,13 @@
 
 
             <!-- submit button -->
-            <div class="field">
+            <div class="field base">
                 <button type="submit" class="button" name="send_message" @click.self.prevent="getSend">Send</button>
-            </div>
-        </form>
-
-        <form id="form3">
-            <div class="field">
-                <button type="submit" id="close" class="button" name="close" @click.self.prevent="getClose">Close</button>
+                <button type="submit" class="button" name ="show_saved" @click.self.prevent="showSaved">Show old</button>
+                <pre id="json" class="json"></pre>
+                <button type="submit" class="button" name="delete_saved"
+                @click.self.prevent="deleteSaved">Delete all</button>
+                <pre id="json" class="json">{{ json }}</pre>
             </div>
         </form>
     </div>
@@ -68,21 +68,16 @@ export default {
             nic: "",
             address: "",
             savedoutput: "",
-            savedme: ""
+            savedme: "",
+            json: ""
         }
     },
     mounted() {
-        this.getConnect();
+        this.scrollToEnd();
     },
     methods: {
         getConnect(/*event*/) {
             // console.log(event);
-/*
-            if (!event) {
-                // don't submit
-                event.preventDefault();
-                return false;
-            }*/
             let that = this;
             //let haveaddress = that.address ? that.address : "ws://localhost:1347/";
             let haveaddress = that.address ? that.address : "wss://my-ws.guni.me/";
@@ -135,6 +130,7 @@ export default {
             that.output += `\n${timestamp}\n`;
             that.output += `${printnic}${that.info.message}`;
             that.savedoutput = that.output;
+            that.scrollToEnd();
         },
 
         getSend(event) {
@@ -145,6 +141,11 @@ export default {
             }
             let that = this;
             let messageText = that.message;
+            let save = true;
+            let cont = messageText;
+            let priv = false;
+            let friend = "";
+
 
             if (messageText.indexOf('/nick') == 0) {
                 let nickname_array = messageText.split(' ')
@@ -153,6 +154,18 @@ export default {
                     that.nic = newname;
                     that.who = "Nickname " + newname + "'s page";
                 }
+                save = false;
+            }
+            if (messageText.indexOf('/all') == 0) {
+                save = false;
+            }
+            if (messageText.indexOf('/private') == 0) {
+                let private_array = messageText.split(/ (.+)/);
+                friend = private_array[1];
+                let who_array = friend.split(/ (.+)/);
+                friend = who_array[0]
+                cont = who_array[1];
+                priv = true;
             }
 
             if (!websocket || websocket.readyState === 3) {
@@ -166,6 +179,96 @@ export default {
                 let asjson = JSON.stringify(msg);
                 that.outputLog(asjson);
             }
+            let now = new Date();
+            let timestamp = now.toLocaleTimeString();
+            if (save == true) {
+                that.saveMessage(cont, timestamp, that.nic, priv, friend);
+            }
+        },
+
+        saveMessage(cont, time, nick, priv, friend) {
+            let tosave = {
+                "message": cont,
+                "time": time,
+                "nick": nick,
+                "private": priv,
+                "friend": friend
+            };
+            tosave = JSON.stringify(tosave);
+
+            //let inserturl = 'http://localhost:1347/insert';
+            let inserturl = 'https://my-ws.guni.me/insert';
+            fetch(inserturl, {
+                method: 'post',
+                headers: {'Content-Type': 'application/json'},
+                body: tosave
+            })
+            .then(response => {
+                if (response.ok) return response.json()
+            })
+            .then(data => {
+                // eslint-disable-next-line
+                console.log(data)
+            })
+        },
+
+        showSaved(event) {
+            if (!event) {
+                // don't submit
+                event.preventDefault();
+                return false;
+            }
+            let that = this;
+            //let address = 'http://localhost:1347/list';
+            let address = 'https://my-ws.guni.me/list';
+            fetch(address)
+            .then(response => {
+            // eslint-disable-next-line
+                console.log(response);
+                if (response.ok) return response.json();
+            })
+            .then(data => {
+                // eslint-disable-next-line
+                console.log(JSON.stringify(data, null, 2));
+                // eslint-disable-next-line
+                data.forEach(x => console.log(x));
+                let safe = [];
+                data.forEach((x) => {
+                    if (x.private == false) {
+                        safe.push(x);
+                    }
+                    that.json = JSON.stringify(safe, null, 2);
+                });
+            })
+        },
+
+
+        deleteSaved(event) {
+            if (!event) {
+                // don't submit
+                event.preventDefault();
+                return false;
+            }
+            let that = this;
+            //let address = 'http://localhost:1347/list';
+            let address = 'https://my-ws.guni.me/drop';
+            fetch(address)
+            .then(response => {
+            // eslint-disable-next-line
+                console.log(response);
+                if (response.ok) return response;
+            })
+            .then(data => {
+                // eslint-disable-next-line
+                console.log(JSON.stringify(data, null, 2));
+                json.innerHTML = JSON.stringify(data, null, 2);
+            })
+        },
+
+        scrollToEnd() {
+            let container = document.querySelector(".json");
+            let scrollHeight = container.scrollHeight;
+            container.scrollTop = scrollHeight;
         },
 
         getClose(event) {
@@ -191,6 +294,10 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
+.base {
+    min-height: 18em;
+}
+
 h2 {
     font-size: 2em;
     margin-top: 1em;
@@ -231,4 +338,15 @@ p {
     height: 4em;
     margin-top: 3em;
 }
+
+pre.json {
+    float: right;
+    margin-top: 0.5em;
+    margin-bottom: 1em;
+    white-space: pre;
+    max-height: 25em;
+    overflow: scroll;
+    margin-bottom: 1em;
+}
+
 </style>
